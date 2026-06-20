@@ -1,0 +1,522 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1.0" />
+<title>Sub-40 · 10k Plan</title>
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:#FBFAF6; --ink:#181A1F; --muted:#73767E; --faint:#9DA0A7;
+    --line:#E8E4DA; --card:#FFFFFF; --card-2:#F4F1EA;
+    --accent:#E2392A;            /* effort red — today, goal pace, race only */
+    --easy:#4F8A6B; --thr:#C0871C; --vo2:#CC6326; --gp:#E2392A;
+    --spd:#7E59A6; --long:#3C6D93; --rest:#C3C0B8; --race:#E2392A;
+    --font-display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
+    --font-data:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --font-body:'Inter', ui-sans-serif, system-ui, sans-serif;
+    --shadow:0 1px 2px rgba(20,22,28,.04), 0 8px 24px rgba(20,22,28,.05);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --paper:#101115; --ink:#ECEAE3; --muted:#9C9FA6; --faint:#75787F;
+      --line:#26282E; --card:#191B20; --card-2:#202329;
+      --easy:#62A684; --thr:#D4A038; --vo2:#E07B3D; --gp:#F0584A;
+      --spd:#9A78C2; --long:#5A8CB4; --rest:#3A3C42; --race:#F0584A; --accent:#F0584A;
+      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
+    }
+  }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  html { -webkit-text-size-adjust:100%; }
+  body {
+    background:var(--paper); color:var(--ink); font-family:var(--font-body);
+    line-height:1.5; -webkit-font-smoothing:antialiased;
+    padding:0 18px 128px; display:flex; flex-direction:column; align-items:center;
+  }
+  .wrap { width:100%; max-width:680px; }
+
+  /* ---- masthead ---- */
+  header.mast { padding:34px 0 18px; }
+  .wordmark {
+    font-family:var(--font-display); font-weight:700; letter-spacing:-.04em;
+    font-size:clamp(46px, 16vw, 88px); line-height:.86; display:flex; align-items:baseline; gap:.06em;
+  }
+  .wordmark .n { color:var(--accent); }
+  .mast-sub {
+    font-family:var(--font-data); font-size:12.5px; color:var(--muted);
+    letter-spacing:.02em; margin-top:14px; text-transform:uppercase;
+  }
+  .mast-sub b { color:var(--ink); font-weight:600; }
+
+  /* ---- progress rail ---- */
+  .rail { margin-top:18px; }
+  .rail-meta {
+    display:flex; justify-content:space-between; align-items:baseline;
+    font-family:var(--font-data); font-size:11.5px; color:var(--muted);
+    letter-spacing:.04em; text-transform:uppercase; margin-bottom:7px;
+  }
+  .rail-meta .big { color:var(--ink); font-weight:600; }
+  .rail-track { height:3px; background:var(--line); border-radius:3px; overflow:hidden; }
+  .rail-fill { height:100%; background:var(--ink); border-radius:3px; transition:width .6s ease; }
+
+  /* ---- hero (this week) ---- */
+  .hero {
+    margin-top:26px; background:var(--card); border:1px solid var(--line);
+    border-radius:18px; padding:22px 20px 20px; box-shadow:var(--shadow);
+    position:relative; overflow:hidden;
+  }
+  .hero::before {
+    content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent);
+  }
+  .eyebrow {
+    font-family:var(--font-data); font-size:11px; letter-spacing:.16em;
+    text-transform:uppercase; color:var(--accent); font-weight:600;
+  }
+  .hero-head { display:flex; align-items:flex-end; gap:14px; margin-top:8px; flex-wrap:wrap; }
+  .hero-week {
+    font-family:var(--font-display); font-weight:700; letter-spacing:-.03em;
+    font-size:clamp(40px,12vw,60px); line-height:.9;
+  }
+  .hero-phase { padding-bottom:5px; }
+  .hero-phase .pname { font-family:var(--font-display); font-weight:600; font-size:17px; letter-spacing:-.01em; }
+  .hero-phase .pdate { font-family:var(--font-data); font-size:12px; color:var(--muted); margin-top:1px; }
+  .note-chip {
+    display:inline-block; font-family:var(--font-data); font-size:10.5px; font-weight:600;
+    letter-spacing:.1em; text-transform:uppercase; padding:3px 8px; border-radius:999px;
+    border:1px solid var(--line); color:var(--muted); margin-left:auto; align-self:center;
+  }
+  .note-chip.peak { color:var(--accent); border-color:var(--accent); }
+  .note-chip.race { background:var(--accent); color:#fff; border-color:var(--accent); }
+
+  /* ---- rhythm strip ---- */
+  .strip { display:grid; grid-template-columns:repeat(7,1fr); gap:6px; margin-top:20px; }
+  .day {
+    display:flex; flex-direction:column; align-items:center; gap:8px;
+    padding:8px 0 7px; border-radius:10px; position:relative;
+  }
+  .day .barwrap { height:48px; display:flex; align-items:flex-end; width:62%; }
+  .day .bar { width:100%; border-radius:5px; background:var(--rest); min-height:5px; }
+  .day .dl {
+    font-family:var(--font-data); font-size:11px; font-weight:500; color:var(--faint);
+    letter-spacing:.02em;
+  }
+  .day.today { background:color-mix(in srgb, var(--accent) 9%, transparent); box-shadow:inset 0 0 0 1.5px var(--accent); }
+  .day.today .dl { color:var(--accent); font-weight:600; }
+  .day.today::after {
+    content:""; position:absolute; top:6px; right:7px; width:6px; height:6px;
+    border-radius:50%; background:var(--accent);
+  }
+  .hero .strip .day .barwrap { height:54px; }
+
+  /* today readout */
+  .today-read {
+    margin-top:20px; padding-top:16px; border-top:1px solid var(--line);
+    display:flex; gap:13px; align-items:flex-start;
+  }
+  .today-read .tdot { width:10px; height:10px; border-radius:50%; margin-top:6px; flex:none; background:var(--accent); }
+  .today-read .tx { flex:1; }
+  .today-read .tlabel { font-family:var(--font-data); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
+  .today-read .ttitle { font-family:var(--font-display); font-weight:600; font-size:18px; margin-top:3px; letter-spacing:-.01em; }
+  .today-read .tdetail { font-family:var(--font-data); font-size:13px; color:var(--muted); margin-top:3px; line-height:1.45; }
+
+  .jump {
+    margin-top:18px; width:100%; border:1px solid var(--line); background:transparent;
+    color:var(--ink); font-family:var(--font-data); font-size:12px; letter-spacing:.08em;
+    text-transform:uppercase; padding:11px; border-radius:10px; cursor:pointer;
+    display:flex; align-items:center; justify-content:center; gap:8px; transition:background .15s;
+  }
+  .jump:hover { background:var(--card-2); }
+
+  /* big countdown (pre-start / race) */
+  .count-big {
+    font-family:var(--font-display); font-weight:700; letter-spacing:-.04em;
+    font-size:clamp(52px,18vw,92px); line-height:.85; margin-top:6px;
+  }
+  .count-sub { font-family:var(--font-data); font-size:13px; color:var(--muted); margin-top:10px; letter-spacing:.04em; }
+
+  /* ---- plan ---- */
+  .plan-h {
+    font-family:var(--font-data); font-size:11px; letter-spacing:.18em; text-transform:uppercase;
+    color:var(--muted); margin:44px 0 0; padding-bottom:12px; border-bottom:1px solid var(--line);
+  }
+  .phase-h { margin-top:30px; }
+  .phase-h .pix {
+    font-family:var(--font-data); font-size:11px; color:var(--faint); letter-spacing:.1em;
+  }
+  .phase-h .pn {
+    font-family:var(--font-display); font-weight:600; font-size:21px; letter-spacing:-.02em; margin-top:2px;
+  }
+  .phase-h .pi { font-size:13.5px; color:var(--muted); margin-top:3px; max-width:46ch; }
+
+  .week {
+    margin-top:12px; background:var(--card); border:1px solid var(--line);
+    border-radius:14px; overflow:hidden; transition:border-color .2s;
+  }
+  .week.current { border-color:var(--accent); box-shadow:var(--shadow); }
+  .wbtn {
+    width:100%; background:none; border:0; cursor:pointer; text-align:left;
+    padding:15px 16px; display:flex; align-items:center; gap:14px; color:inherit;
+  }
+  .wnum {
+    font-family:var(--font-data); font-weight:600; font-size:13px; color:var(--faint);
+    width:34px; flex:none; letter-spacing:.02em;
+  }
+  .week.current .wnum { color:var(--accent); }
+  .wmid { flex:1; min-width:0; }
+  .wdates { font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:-.01em; }
+  .wmini { display:flex; gap:3px; margin-top:8px; height:14px; align-items:flex-end; }
+  .wmini i { flex:1; border-radius:2px; background:var(--rest); min-height:3px; display:block; }
+  .wright { display:flex; align-items:center; gap:10px; flex:none; }
+  .chev { width:9px; height:9px; border-right:2px solid var(--faint); border-bottom:2px solid var(--faint);
+          transform:rotate(45deg); transition:transform .22s; margin-right:2px; }
+  .week.open .chev { transform:rotate(225deg); }
+  .today-tag {
+    font-family:var(--font-data); font-size:9.5px; font-weight:600; letter-spacing:.1em;
+    background:var(--accent); color:#fff; padding:2px 6px; border-radius:5px;
+  }
+
+  .wbody { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .week.open .wbody { max-height:760px; }
+  .wbody-in { padding:2px 16px 16px; }
+  .sess {
+    display:flex; gap:13px; padding:12px 0; border-top:1px solid var(--line); align-items:flex-start;
+  }
+  .sess .sday {
+    font-family:var(--font-data); font-size:11px; font-weight:600; color:var(--muted);
+    width:34px; flex:none; padding-top:2px; letter-spacing:.03em;
+  }
+  .sess.is-today .sday { color:var(--accent); }
+  .sbar { width:3px; align-self:stretch; border-radius:3px; flex:none; background:var(--rest); }
+  .sess .sx { flex:1; min-width:0; }
+  .stag {
+    font-family:var(--font-data); font-size:10px; font-weight:600; letter-spacing:.1em;
+    text-transform:uppercase;
+  }
+  .stitle { font-weight:600; font-size:14.5px; margin-top:2px; }
+  .sdetail { font-family:var(--font-data); font-size:12.5px; color:var(--muted); margin-top:3px; line-height:1.5; }
+  .wucd { display:inline-block; font-family:var(--font-data); font-size:10px; color:var(--faint);
+          border:1px solid var(--line); border-radius:5px; padding:1px 5px; margin-top:6px; letter-spacing:.04em; }
+
+  /* ---- legend + notes ---- */
+  details.box { margin-top:14px; background:var(--card); border:1px solid var(--line); border-radius:14px; }
+  details.box > summary {
+    list-style:none; cursor:pointer; padding:15px 16px; display:flex; justify-content:space-between;
+    align-items:center; font-family:var(--font-data); font-size:11.5px; letter-spacing:.14em;
+    text-transform:uppercase; color:var(--muted);
+  }
+  details.box > summary::-webkit-details-marker { display:none; }
+  details.box[open] > summary { border-bottom:1px solid var(--line); }
+  details.box .inner { padding:14px 16px 18px; }
+  .zone { display:flex; align-items:baseline; gap:10px; padding:7px 0; }
+  .zcode { font-family:var(--font-data); font-weight:600; font-size:13px; width:42px; flex:none; }
+  .zname { font-size:13.5px; flex:1; }
+  .zpace { font-family:var(--font-data); font-size:13px; color:var(--muted); }
+  .rule { font-size:13.5px; color:var(--muted); padding:6px 0 6px 16px; position:relative; line-height:1.5; }
+  .rule::before { content:""; position:absolute; left:0; top:12px; width:6px; height:6px; border-radius:50%; background:var(--accent); }
+  .rule b { color:var(--ink); font-weight:600; }
+
+  footer { margin-top:34px; font-family:var(--font-data); font-size:11px; color:var(--faint);
+           text-align:center; letter-spacing:.03em; line-height:1.7; }
+
+  /* ---- floating pace dock ---- */
+  .pacedock { position:fixed; left:0; right:0; bottom:0; z-index:50;
+              display:flex; justify-content:center; padding:0 14px 14px; pointer-events:none; }
+  .pd-card { pointer-events:auto; width:100%; max-width:652px; background:var(--card);
+             border:1px solid var(--line); border-radius:16px; overflow:hidden;
+             box-shadow:0 -2px 10px rgba(20,22,28,.05), 0 12px 34px rgba(20,22,28,.16); }
+  @media (prefers-color-scheme: dark){ .pd-card{ box-shadow:0 -2px 10px rgba(0,0,0,.3), 0 12px 34px rgba(0,0,0,.5);} }
+  .pd-row { display:flex; align-items:center; gap:10px; padding:9px 9px 9px 14px; }
+  .pd-label { font-family:var(--font-data); font-size:10px; font-weight:600; letter-spacing:.14em;
+              text-transform:uppercase; color:var(--muted); flex:none; }
+  .pd-chips { flex:1; display:flex; gap:7px; overflow-x:auto; scrollbar-width:none; white-space:nowrap; -webkit-overflow-scrolling:touch; }
+  .pd-chips::-webkit-scrollbar { display:none; }
+  .pd-chip { flex:none; display:inline-flex; align-items:center; gap:6px; font-family:var(--font-data);
+             font-size:12.5px; padding:5px 10px; border-radius:999px; background:var(--card-2); border:1px solid var(--line); }
+  .pd-chip .d { width:7px; height:7px; border-radius:50%; flex:none; }
+  .pd-chip .c { font-weight:600; color:var(--ink); }
+  .pd-chip .p { color:var(--muted); }
+  .pd-toggle { flex:none; width:32px; height:32px; border:1px solid var(--line); background:var(--card-2);
+               border-radius:9px; cursor:pointer; display:flex; align-items:center; justify-content:center; }
+  .pd-chev { width:8px; height:8px; border-left:2px solid var(--muted); border-top:2px solid var(--muted);
+             transform:rotate(45deg); transition:transform .22s; margin-top:3px; }
+  .pd-card.open .pd-chev { transform:rotate(225deg); margin-top:-2px; }
+  .pd-full { max-height:0; overflow:hidden; transition:max-height .3s ease; }
+  .pd-card.open .pd-full { max-height:340px; }
+  .pd-full-in { padding:14px 16px 4px; display:grid; grid-template-columns:1fr 1fr; gap:0 22px;
+                border-bottom:1px solid var(--line); }
+  .pd-z { display:flex; align-items:baseline; gap:9px; padding:7px 0; }
+  .pd-z .zd { width:8px; height:8px; border-radius:50%; flex:none; align-self:center; }
+  .pd-z .zc { font-family:var(--font-data); font-weight:600; font-size:13px; color:var(--ink); width:26px; flex:none; }
+  .pd-z .zn { font-size:13px; flex:1; }
+  .pd-z .zp { font-family:var(--font-data); font-size:12.5px; color:var(--muted); }
+  @media (max-width:520px){ .pd-full-in { grid-template-columns:1fr; } .pd-card.open .pd-full{ max-height:440px; } }
+
+  @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto !important; transition:none !important; } .day.today::after{animation:none;} }
+  @media (prefers-reduced-motion: no-preference) {
+    .day.today::after { animation:pulse 2s ease-in-out infinite; }
+    @keyframes pulse { 0%,100%{opacity:1;transform:scale(1);} 50%{opacity:.35;transform:scale(.7);} }
+    html { scroll-behavior:smooth; }
+  }
+  button:focus-visible, summary:focus-visible { outline:2px solid var(--accent); outline-offset:2px; border-radius:8px; }
+</style>
+</head>
+<body>
+<div class="wrap">
+
+  <header class="mast">
+    <div class="wordmark">SUB<span class="n">-40</span></div>
+    <div class="mast-sub">Chris <b>×</b> Megan &nbsp;·&nbsp; 10K &nbsp;·&nbsp; Sun <b>11 Oct 2026</b></div>
+    <div class="rail">
+      <div class="rail-meta"><span id="railLeft" class="big">—</span><span id="railRight">—</span></div>
+      <div class="rail-track"><div id="railFill" class="rail-fill" style="width:0"></div></div>
+    </div>
+  </header>
+
+  <section id="hero" class="hero"></section>
+
+  <h2 class="plan-h">The full block · 16 weeks</h2>
+  <div id="plan"></div>
+
+  <details class="box">
+    <summary>How to run it <span style="font-family:var(--font-body);text-transform:none;letter-spacing:0">▾</span></summary>
+    <div class="inner" id="rules"></div>
+  </details>
+
+  <footer>
+    Paces are blended estimates off a 21:30 5k.<br>Replace them after your week-1 time trials.
+  </footer>
+</div>
+
+<div class="pacedock">
+  <div class="pd-card" id="pdCard">
+    <div class="pd-full" id="pdFull"><div class="pd-full-in" id="pdZones"></div></div>
+    <div class="pd-row">
+      <span class="pd-label">Pace<br>/km</span>
+      <div class="pd-chips" id="pdChips"></div>
+      <button class="pd-toggle" id="pdToggle" aria-expanded="false" aria-controls="pdFull" aria-label="Show pace zone names"><span class="pd-chev"></span></button>
+    </div>
+  </div>
+</div>
+
+<script>
+/* ---------------- data ---------------- */
+const START = new Date(2026, 5, 22);   // Mon 22 Jun 2026
+const RACE  = new Date(2026, 9, 11);   // Sun 11 Oct 2026
+const DAY = ['M','T','W','T','F','S','S'];
+
+const TYPE = {
+  easy:    {tag:'Easy',       hue:'easy', load:16},
+  recovery:{tag:'Recovery',   hue:'easy', load:12},
+  threshold:{tag:'Threshold', hue:'thr',  load:46, q:true},
+  vo2:     {tag:'VO₂',        hue:'vo2',  load:48, q:true},
+  gp:      {tag:'Goal pace',  hue:'gp',   load:48, q:true},
+  speed:   {tag:'Speed',      hue:'spd',  load:42, q:true},
+  hills:   {tag:'Hills',      hue:'spd',  load:42, q:true},
+  long:    {tag:'Long run',   hue:'long', load:32},
+  primer:  {tag:'Primer',     hue:'easy', load:16},
+  shakeout:{tag:'Shakeout',   hue:'easy', load:12},
+  rest:    {tag:'Rest',       hue:'rest', load:5},
+  race:    {tag:'Race',       hue:'race', load:54},
+};
+const R = {type:'rest'};
+function E(t,d){return {type:'easy',title:t,detail:d};}
+
+const WEEKS = [
+  {dates:'Jun 22 – 28', days:[E('Easy + strides','6 km easy · 6 strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 8 min @ T (4:30–4:40), 3 min jog'},R,{type:'hills',title:'Hill strides',detail:'8 × 30 s hills hard / jog-down · 6 strides'},R,{type:'long',title:'Long run',detail:'12 km easy'}]},
+  {dates:'Jun 29 – Jul 5', days:[E('Easy + strides','7 km easy · strides'),R,{type:'threshold',title:'Threshold',detail:'3 × 8 min @ T, 2:30 jog'},R,{type:'hills',title:'Hill strides',detail:'10 × 30 s hills · strides'},R,{type:'long',title:'Long run',detail:'14 km easy'}]},
+  {dates:'Jul 6 – 12', days:[E('Easy + strides','7 km easy · strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 12 min @ T, 3 min jog'},R,{type:'speed',title:'Speed reps',detail:'6 × 400 m @ Sp (3:35–3:50), 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
+  {dates:'Jul 13 – 19', note:'Deload', days:[E('Easy','6 km easy'),R,{type:'threshold',title:'Threshold',detail:'2 × 10 min @ T'},R,E('Easy + strides','Easy run · 6 strides only'),R,{type:'long',title:'Long run',detail:'12 km easy'}]},
+
+  {dates:'Jul 20 – 26', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'5 × 1 km @ T, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V (3:55–4:05), 2 min jog'},R,{type:'long',title:'Long run',detail:'15 km easy'}]},
+  {dates:'Jul 27 – Aug 2', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'4 × 1.5 km @ T, 90 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'16 km · last 3 km @ steady'}]},
+  {dates:'Aug 3 – 9', days:[E('Easy + strides','9 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'6 × 1 km @ T, 60 s jog (or 25 min continuous)'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 800 m @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'17 km easy'}]},
+  {dates:'Aug 10 – 16', note:'Deload', days:[E('Easy','7 km easy'),R,{type:'threshold',title:'Tempo',detail:'20 min continuous @ T'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'13 km easy'}]},
+
+  {dates:'Aug 17 – 23', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Tempo + goal pace',detail:'2 × 2 km @ T (3 min) + 2 × 1 km @ GP (4:00), 2 min'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 1 km @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km · 2 × 2 km @ steady'}]},
+  {dates:'Aug 24 – 30', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Descending km',detail:'5 × 1 km, 4:12 → 4:00, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ 3:55, 90 s jog'},R,{type:'long',title:'Long run + GP',detail:'16 km · 3 × 2 km @ GP, 2 min float'}]},
+  {dates:'Aug 31 – Sep 6', note:'Peak', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Sub-40 confidence',detail:'6 × 1 km @ GP (4:00), 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'4 × 1200 m @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'18 km · last 4 km @ steady'}]},
+  {dates:'Sep 7 – 13', note:'Deload', days:[E('Easy','7 km easy'),R,{type:'gp',title:'Goal pace',detail:'4 × 1 km @ GP, 90 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'13 km easy'}]},
+
+  {dates:'Sep 14 – 20', days:[E('Easy + strides','8 km easy · strides'),R,{type:'gp',title:'Race-specific',detail:'3 × 2 km @ GP (4:00), 2:30 jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ 3:55, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
+  {dates:'Sep 21 – 27', days:[E('Easy + strides','7 km easy · strides'),R,{type:'gp',title:'Goal pace',detail:'5 × 1 km @ GP, 60 s jog'},R,{type:'speed',title:'Sharpening',detail:'8 × 400 m @ Sp (3:35–3:50), 90 s jog'},R,{type:'long',title:'Long run',detail:'14 km easy'}]},
+  {dates:'Sep 28 – Oct 4', note:'Sharpen', days:[E('Easy + strides','6 km easy · strides'),R,{type:'gp',title:'Goal pace',detail:'4 × 1 km @ GP, 75 s jog'},R,{type:'vo2',title:'Tune-up',detail:'3 km time trial, or 5 × 3 min @ V'},R,{type:'long',title:'Long run',detail:'12 km easy'}]},
+  {dates:'Oct 5 – 11', note:'Race week', days:[{type:'recovery',title:'Optional shakeout',detail:'Rest, or 5 km very easy'},R,E('Easy + strides','6 km easy · 4 strides'),R,{type:'primer',title:'Race primer',detail:'4 km easy · 4 × 30 s @ goal pace'},{type:'shakeout',title:'Shakeout',detail:'Optional 3 km + 3 × 100 m strides, or rest'},{type:'race',title:'RACE — 10 km',detail:'Goal 4:00/km. Open 4:02–4:03, settle, push from 7 km.'}]},
+];
+
+const PHASES = [
+  {n:'Foundation',         span:'Jun 22 – Jul 19', i:'Consistent weeks. Gentle threshold, hills and strides.', w:[0,1,2,3]},
+  {n:'Threshold build',    span:'Jul 20 – Aug 16', i:'Cruise intervals and tempo. Volume builds.', w:[4,5,6,7]},
+  {n:'10k-specific · VO₂', span:'Aug 17 – Sep 13', i:'Make 4:00/km feel like home. Peak volume.', w:[8,9,10,11]},
+  {n:'Sharpen & race',     span:'Sep 14 – Oct 11', i:'Race-specific work, then taper to a peak.', w:[12,13,14,15]},
+];
+
+const ZONES = [
+  ['E','Easy / recovery','5:25–5:55','easy'],['St','Steady','4:50–5:05','long'],['T','Threshold','4:30–4:40','thr'],
+  ['GP','Goal pace','4:00','gp'],['V','VO₂ / intervals','3:55–4:05','vo2'],['Sp','Speed / strides','3:35–3:50','spd'],
+];
+const RULES = [
+  ['Consistency beats heroics.','A session at 80% beats a missed one. Don’t cram to catch up.'],
+  ['Protect Wednesday & Sunday.','If a week slips, keep the threshold and long run; drop the easy run first.'],
+  ['Quality days have bookends.','12–15 min easy warm-up + a few strides, then 10 min easy cool-down.'],
+  ['Run shared paces by feel.','Too easy → Chris drifts faster; biting → Megan eases off or trims a rep.'],
+  ['Niggle rule.','Sharp pain → stop. A niggle past two runs → easy week and see a physio.'],
+];
+
+/* ---------------- logic ---------------- */
+const mid = d => new Date(d.getFullYear(), d.getMonth(), d.getDate());
+const DMS = 86400000;
+const today = mid(new Date());
+const daysSince = Math.round((today - mid(START)) / DMS);
+const daysToRace = Math.round((mid(RACE) - today) / DMS);
+let wIdx = Math.floor(daysSince / 7);
+const preStart = daysSince < 0;
+const done = wIdx > 15;
+const cur = preStart ? 0 : Math.min(wIdx, 15);
+const todayCol = (today.getDay() + 6) % 7;          // 0=Mon … 6=Sun
+const isLiveWeek = i => !preStart && !done && i === cur;
+
+const hue = t => `var(--${TYPE[t].hue})`;
+
+/* ---------------- render: rhythm strip ---------------- */
+function strip(week, live) {
+  return `<div class="strip">` + week.days.map((d,j) => {
+    const t = TYPE[d.type], h = Math.max(5, t.load);
+    const todayCell = live && j === todayCol;
+    return `<div class="day${todayCell?' today':''}">
+      <div class="barwrap"><div class="bar" style="height:${h}px;background:${hue(d.type)}"></div></div>
+      <div class="dl">${DAY[j]}</div></div>`;
+  }).join('') + `</div>`;
+}
+function mini(week) {
+  return `<div class="wmini">` + week.days.map(d => {
+    const h = Math.max(3, Math.round(TYPE[d.type].load * 0.28));
+    return `<i style="height:${h}px;background:${hue(d.type)}"></i>`;
+  }).join('') + `</div>`;
+}
+
+/* ---------------- render: hero ---------------- */
+function noteChip(note) {
+  if (!note) return '';
+  const cls = note==='Race week' ? 'race' : (note==='Peak' ? 'peak' : '');
+  return `<span class="note-chip ${cls}">${note}</span>`;
+}
+function heroHTML() {
+  const w = WEEKS[cur], ph = PHASES.find(p => p.w.includes(cur));
+
+  if (preStart) {
+    return `<div class="eyebrow">Get ready</div>
+      <div class="count-big">${daysSince===-1?'1 day':(-daysSince)+' days'}</div>
+      <div class="count-sub">until the plan starts · Mon 22 Jun · Week 01, ${ph.n}</div>
+      ${strip(w,false)}
+      <button class="jump" onclick="jumpTo(0)">Preview week 01 ↓</button>`;
+  }
+  if (done) {
+    return `<div class="eyebrow">Done</div>
+      <div class="count-big">Race<br>run.</div>
+      <div class="count-sub">16 weeks in the bank. However it landed — that was the work.</div>`;
+  }
+
+  const d = w.days[todayCol];
+  let read;
+  if (d.type === 'rest') {
+    read = `<div class="tlabel">Today · ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][todayCol]}</div>
+      <div class="ttitle">Rest day</div>
+      <div class="tdetail">Nothing scheduled. Recovery is where the work sticks.</div>`;
+  } else {
+    const t = TYPE[d.type];
+    read = `<div class="tlabel">Today · ${['Mon','Tue','Wed','Thu','Fri','Sat','Sun'][todayCol]} · <span style="color:${hue(d.type)}">${t.tag}</span></div>
+      <div class="ttitle">${d.title}</div>
+      <div class="tdetail">${d.detail}${t.q?' &nbsp;·&nbsp; + warm-up / cool-down':''}</div>`;
+  }
+  const countLine = daysToRace===0 ? 'Race day.' : `${daysToRace} days to race`;
+
+  return `<div class="eyebrow">This week · ${countLine}</div>
+    <div class="hero-head">
+      <div class="hero-week">W${String(cur+1).padStart(2,'0')}</div>
+      <div class="hero-phase"><div class="pname">${ph.n}</div><div class="pdate">${w.dates}</div></div>
+      ${noteChip(w.note)}
+    </div>
+    ${strip(w,true)}
+    <div class="today-read"><div class="tdot" style="background:${d.type==='rest'?'var(--rest)':hue(d.type)}"></div>
+      <div class="tx">${read}</div></div>
+    <button class="jump" onclick="jumpTo(${cur})">See the full week ↓</button>`;
+}
+
+/* ---------------- render: plan ---------------- */
+function sessionRow(d, j, live) {
+  if (d.type === 'rest') return '';
+  const t = TYPE[d.type], names=['Mon','Tue','Wed','Thu','Fri','Sat','Sun'];
+  const todayHere = live && j === todayCol;
+  return `<div class="sess${todayHere?' is-today':''}">
+    <div class="sday">${names[j]}</div>
+    <div class="sbar" style="background:${hue(d.type)}"></div>
+    <div class="sx">
+      <div class="stag" style="color:${hue(d.type)}">${t.tag}</div>
+      <div class="stitle">${d.title}</div>
+      <div class="sdetail">${d.detail}</div>
+      ${t.q?'<span class="wucd">+ 12–15 min warm-up · 10 min cool-down</span>':''}
+    </div></div>`;
+}
+function weekCard(i) {
+  const w = WEEKS[i], live = isLiveWeek(i), open = live || (preStart && i===0);
+  const body = w.days.map((d,j)=>sessionRow(d,j,live)).join('');
+  return `<div class="week${live?' current':''}${open?' open':''}" id="wk${i}">
+    <button class="wbtn" aria-expanded="${open}" onclick="toggle(this)">
+      <span class="wnum">W${String(i+1).padStart(2,'0')}</span>
+      <span class="wmid"><span class="wdates">${w.dates}</span>${mini(w)}</span>
+      <span class="wright">
+        ${live?'<span class="today-tag">NOW</span>':noteChip(w.note)}
+        <span class="chev"></span>
+      </span>
+    </button>
+    <div class="wbody"><div class="wbody-in">${body}</div></div>
+  </div>`;
+}
+function planHTML() {
+  return PHASES.map(p => `
+    <div class="phase-h">
+      <div class="pix">${p.span}</div>
+      <div class="pn">${p.n}</div>
+      <div class="pi">${p.i}</div>
+    </div>
+    ${p.w.map(weekCard).join('')}`).join('');
+}
+
+/* ---------------- interactions ---------------- */
+function toggle(btn){
+  const wk = btn.closest('.week'), opening = !wk.classList.contains('open');
+  wk.classList.toggle('open'); btn.setAttribute('aria-expanded', opening);
+}
+function jumpTo(i){
+  const el = document.getElementById('wk'+i);
+  el.classList.add('open');
+  el.querySelector('.wbtn').setAttribute('aria-expanded','true');
+  el.scrollIntoView({behavior:'smooth', block:'center'});
+}
+
+/* ---------------- paint ---------------- */
+document.getElementById('hero').innerHTML = heroHTML();
+document.getElementById('plan').innerHTML = planHTML();
+document.getElementById('pdChips').innerHTML = ZONES.map(z=>`<span class="pd-chip"><span class="d" style="background:var(--${z[3]})"></span><span class="c">${z[0]}</span><span class="p">${z[2]}</span></span>`).join('');
+document.getElementById('pdZones').innerHTML = ZONES.map(z=>`<div class="pd-z"><span class="zd" style="background:var(--${z[3]})"></span><span class="zc">${z[0]}</span><span class="zn">${z[1]}</span><span class="zp">${z[2]} /km</span></div>`).join('');
+(function(){
+  const card=document.getElementById('pdCard'), btn=document.getElementById('pdToggle');
+  btn.addEventListener('click',()=>{ const o=card.classList.toggle('open'); btn.setAttribute('aria-expanded',o); });
+  document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ card.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
+})();
+document.getElementById('rules').innerHTML = RULES.map(r=>`<div class="rule"><b>${r[0]}</b> ${r[1]}</div>`).join('');
+
+// progress rail
+(function(){
+  const left = preStart ? 'Starts 22 Jun' : (done ? 'Complete' : `Week ${cur+1} / 16`);
+  const right = preStart ? `${-daysSince} days out` : (done ? 'Race run' : `${Math.max(0,daysToRace)} days to race`);
+  const pct = preStart ? 0 : (done ? 100 : Math.round(((cur+1)/16)*100));
+  document.getElementById('railLeft').textContent = left;
+  document.getElementById('railRight').textContent = right;
+  setTimeout(()=>{document.getElementById('railFill').style.width = pct+'%';}, 120);
+})();
+</script>
+</body>
+</html>
