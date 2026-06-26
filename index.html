@@ -3,45 +3,52 @@
 <head>
 <meta charset="UTF-8" />
 <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-<title>Sub-40 · 10k Plan</title>
+<title>Sub40</title>
 <link rel="preconnect" href="https://fonts.googleapis.com" />
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;600;700&family=IBM+Plex+Mono:wght@400;500;600&family=Inter:wght@400;500;600&display=swap" rel="stylesheet" />
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet" />
 <style>
   :root {
-    --paper:#FBFAF6; --ink:#181A1F; --muted:#73767E; --faint:#9DA0A7;
-    --line:#E8E4DA; --card:#FFFFFF; --card-2:#F4F1EA;
-    --accent:#E2392A;            /* effort red — today, goal pace, race only */
-    --easy:#4F8A6B; --thr:#C0871C; --vo2:#CC6326; --gp:#E2392A;
-    --spd:#7E59A6; --long:#3C6D93; --rest:#C3C0B8; --race:#E2392A;
-    --font-display:'Space Grotesk', ui-sans-serif, system-ui, sans-serif;
-    --font-data:'IBM Plex Mono', ui-monospace, SFMono-Regular, Menlo, monospace;
+    --paper:#0D0E11; --ink:#F3F3F5; --head:#FCFCFD; --muted:#8A8C93; --faint:#5E6068;
+    --line:rgba(255,255,255,.07); --line-2:rgba(255,255,255,.11); --card:#161719; --card-2:#202227;
+    --accent:#EA3A45;            /* crimson — today, goal pace, race, progress */
+    --accent-2:#F0584A;
+    --easy:#5FB389; --thr:#E0A93C; --vo2:#ED7B43; --gp:#EA3A45;
+    --spd:#A07BD0; --long:#5C97D6; --rest:#34363C; --race:#EA3A45; --steady:#3FB6AE;
+    --font-display:'Inter', ui-sans-serif, system-ui, sans-serif;
+    --font-data:'Inter', ui-sans-serif, system-ui, sans-serif;
     --font-body:'Inter', ui-sans-serif, system-ui, sans-serif;
-    --shadow:0 1px 2px rgba(20,22,28,.04), 0 8px 24px rgba(20,22,28,.05);
-  }
-  @media (prefers-color-scheme: dark) {
-    :root {
-      --paper:#101115; --ink:#ECEAE3; --muted:#9C9FA6; --faint:#75787F;
-      --line:#26282E; --card:#191B20; --card-2:#202329;
-      --easy:#62A684; --thr:#D4A038; --vo2:#E07B3D; --gp:#F0584A;
-      --spd:#9A78C2; --long:#5A8CB4; --rest:#3A3C42; --race:#F0584A; --accent:#F0584A;
-      --shadow:0 1px 2px rgba(0,0,0,.3), 0 10px 30px rgba(0,0,0,.35);
-    }
+    --shadow:0 1px 2px rgba(0,0,0,.35), 0 16px 40px rgba(0,0,0,.45);
+    --glow:0 0 12px rgba(234,58,69,.55);
   }
   * { box-sizing:border-box; margin:0; padding:0; }
   html { -webkit-text-size-adjust:100%; }
   body {
     background:var(--paper); color:var(--ink); font-family:var(--font-body);
-    line-height:1.5; -webkit-font-smoothing:antialiased;
+    line-height:1.5; -webkit-font-smoothing:antialiased; font-variant-numeric:tabular-nums;
     padding:0 18px 128px; display:flex; flex-direction:column; align-items:center;
+    min-height:100vh; position:relative;
   }
-  .wrap { width:100%; max-width:680px; }
+  /* ambient crimson aurora at the top */
+  body::before {
+    content:""; position:fixed; left:0; right:0; top:0; height:380px; pointer-events:none; z-index:0;
+    background:
+      radial-gradient(420px 240px at 12% -8%, rgba(234,58,69,.30), transparent 70%),
+      radial-gradient(520px 260px at 92% -6%, rgba(200,52,96,.26), transparent 72%),
+      radial-gradient(700px 300px at 50% -20%, rgba(120,40,80,.18), transparent 75%);
+    filter:saturate(115%);
+  }
+  .wrap { width:100%; max-width:680px; position:relative; z-index:1; }
 
   /* ---- masthead ---- */
-  header.mast { padding:34px 0 18px; }
+  header.mast { padding:30px 0 18px; }
+  .mast-top { display:flex; align-items:center; gap:13px; margin-bottom:18px; }
+  .logo-mark { width:34px; height:34px; flex:none; filter:drop-shadow(0 0 10px rgba(234,58,69,.45)); }
+  .mast-pill { font-size:13px; font-weight:600; color:var(--ink); background:var(--card-2);
+    border:1px solid var(--line); padding:7px 15px; border-radius:999px; letter-spacing:-.01em; }
   .wordmark {
-    font-family:var(--font-display); font-weight:700; letter-spacing:-.04em;
-    font-size:clamp(46px, 16vw, 88px); line-height:.86; display:flex; align-items:baseline; gap:.06em;
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.045em; color:var(--head);
+    font-size:clamp(46px, 16vw, 88px); line-height:.86; display:flex; align-items:baseline; gap:.04em;
   }
   .wordmark .n { color:var(--accent); }
   .mast-sub {
@@ -58,8 +65,10 @@
     letter-spacing:.04em; text-transform:uppercase; margin-bottom:7px;
   }
   .rail-meta .big { color:var(--ink); font-weight:600; }
-  .rail-track { height:3px; background:var(--line); border-radius:3px; overflow:hidden; }
-  .rail-fill { height:100%; background:var(--ink); border-radius:3px; transition:width .6s ease; }
+  .rail-track { height:4px; background:rgba(255,255,255,.06); border-radius:4px; overflow:hidden; }
+  .rail-fill { height:100%; border-radius:4px; transition:width .6s ease;
+    background:linear-gradient(90deg, var(--accent), var(--accent-2));
+    box-shadow:0 0 10px rgba(234,58,69,.6); }
 
   /* ---- hero (this week) ---- */
   .hero {
@@ -68,7 +77,9 @@
     position:relative; overflow:hidden;
   }
   .hero::before {
-    content:""; position:absolute; left:0; top:0; bottom:0; width:4px; background:var(--accent);
+    content:""; position:absolute; left:0; top:0; bottom:0; width:3px;
+    background:linear-gradient(180deg, var(--accent), var(--accent-2));
+    box-shadow:0 0 14px rgba(234,58,69,.55);
   }
   .eyebrow {
     font-family:var(--font-data); font-size:11px; letter-spacing:.16em;
@@ -76,11 +87,11 @@
   }
   .hero-head { display:flex; align-items:flex-end; gap:14px; margin-top:8px; flex-wrap:wrap; }
   .hero-week {
-    font-family:var(--font-display); font-weight:700; letter-spacing:-.03em;
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.04em; color:var(--head);
     font-size:clamp(40px,12vw,60px); line-height:.9;
   }
   .hero-phase { padding-bottom:5px; }
-  .hero-phase .pname { font-family:var(--font-display); font-weight:600; font-size:17px; letter-spacing:-.01em; }
+  .hero-phase .pname { font-family:var(--font-display); font-weight:700; font-size:17px; letter-spacing:-.015em; color:var(--head); }
   .hero-phase .pdate { font-family:var(--font-data); font-size:12px; color:var(--muted); margin-top:1px; }
   .note-chip {
     display:inline-block; font-family:var(--font-data); font-size:10.5px; font-weight:600;
@@ -118,7 +129,7 @@
   .today-read .tdot { width:10px; height:10px; border-radius:50%; margin-top:6px; flex:none; background:var(--accent); }
   .today-read .tx { flex:1; }
   .today-read .tlabel { font-family:var(--font-data); font-size:11px; letter-spacing:.12em; text-transform:uppercase; color:var(--muted); }
-  .today-read .ttitle { font-family:var(--font-display); font-weight:600; font-size:18px; margin-top:3px; letter-spacing:-.01em; }
+  .today-read .ttitle { font-family:var(--font-display); font-weight:700; font-size:18px; margin-top:3px; letter-spacing:-.015em; color:var(--head); }
   .today-read .tdetail { font-family:var(--font-data); font-size:13px; color:var(--muted); margin-top:3px; line-height:1.45; }
 
   .jump {
@@ -131,7 +142,7 @@
 
   /* big countdown (pre-start / race) */
   .count-big {
-    font-family:var(--font-display); font-weight:700; letter-spacing:-.04em;
+    font-family:var(--font-display); font-weight:800; letter-spacing:-.045em; color:var(--head);
     font-size:clamp(52px,18vw,92px); line-height:.85; margin-top:6px;
   }
   .count-sub { font-family:var(--font-data); font-size:13px; color:var(--muted); margin-top:10px; letter-spacing:.04em; }
@@ -146,15 +157,15 @@
     font-family:var(--font-data); font-size:11px; color:var(--faint); letter-spacing:.1em;
   }
   .phase-h .pn {
-    font-family:var(--font-display); font-weight:600; font-size:21px; letter-spacing:-.02em; margin-top:2px;
+    font-family:var(--font-display); font-weight:700; font-size:21px; letter-spacing:-.025em; margin-top:2px; color:var(--head);
   }
   .phase-h .pi { font-size:13.5px; color:var(--muted); margin-top:3px; max-width:46ch; }
 
   .week {
     margin-top:12px; background:var(--card); border:1px solid var(--line);
-    border-radius:14px; overflow:hidden; transition:border-color .2s;
+    border-radius:16px; overflow:hidden; transition:border-color .2s;
   }
-  .week.current { border-color:var(--accent); box-shadow:var(--shadow); }
+  .week.current { border-color:rgba(234,58,69,.55); box-shadow:0 0 0 1px rgba(234,58,69,.25), 0 12px 38px rgba(0,0,0,.5); }
   .wbtn {
     width:100%; background:none; border:0; cursor:pointer; text-align:left;
     padding:15px 16px; display:flex; align-items:center; gap:14px; color:inherit;
@@ -165,7 +176,7 @@
   }
   .week.current .wnum { color:var(--accent); }
   .wmid { flex:1; min-width:0; }
-  .wdates { font-family:var(--font-display); font-weight:600; font-size:15px; letter-spacing:-.01em; }
+  .wdates { font-family:var(--font-display); font-weight:700; font-size:15px; letter-spacing:-.015em; color:var(--head); }
   .wmini { display:flex; gap:3px; margin-top:8px; height:14px; align-items:flex-end; }
   .wmini i { flex:1; border-radius:2px; background:var(--rest); min-height:3px; display:block; }
   .wright { display:flex; align-items:center; gap:10px; flex:none; }
@@ -194,7 +205,7 @@
     font-family:var(--font-data); font-size:10px; font-weight:600; letter-spacing:.1em;
     text-transform:uppercase;
   }
-  .stitle { font-weight:600; font-size:14.5px; margin-top:2px; }
+  .stitle { font-weight:600; font-size:14.5px; margin-top:2px; color:var(--head); }
   .sdetail { font-family:var(--font-data); font-size:12.5px; color:var(--muted); margin-top:3px; line-height:1.5; }
   .wucd { display:inline-block; font-family:var(--font-data); font-size:10px; color:var(--faint);
           border:1px solid var(--line); border-radius:5px; padding:1px 5px; margin-top:6px; letter-spacing:.04em; }
@@ -224,9 +235,8 @@
   .pacedock { position:fixed; left:0; right:0; bottom:0; z-index:50;
               display:flex; justify-content:center; padding:0 14px 14px; pointer-events:none; }
   .pd-card { pointer-events:auto; width:100%; max-width:652px; background:var(--card);
-             border:1px solid var(--line); border-radius:16px; overflow:hidden;
-             box-shadow:0 -2px 10px rgba(20,22,28,.05), 0 12px 34px rgba(20,22,28,.16); }
-  @media (prefers-color-scheme: dark){ .pd-card{ box-shadow:0 -2px 10px rgba(0,0,0,.3), 0 12px 34px rgba(0,0,0,.5);} }
+             border:1px solid var(--line-2); border-radius:16px; overflow:hidden;
+             box-shadow:0 -2px 10px rgba(0,0,0,.35), 0 14px 38px rgba(0,0,0,.55); }
   .pd-row { display:flex; align-items:center; gap:10px; padding:9px 9px 9px 14px; }
   .pd-label { font-family:var(--font-data); font-size:10px; font-weight:600; letter-spacing:.14em;
               text-transform:uppercase; color:var(--muted); flex:none; }
@@ -251,7 +261,56 @@
   .pd-z .zc { font-family:var(--font-data); font-weight:600; font-size:13px; color:var(--ink); width:26px; flex:none; }
   .pd-z .zn { font-size:13px; flex:1; }
   .pd-z .zp { font-family:var(--font-data); font-size:12.5px; color:var(--muted); }
+  .pd-anchor { grid-column:1 / -1; font-family:var(--font-data); font-size:11px; letter-spacing:.04em;
+               color:var(--faint); padding:0 0 8px; }
+  .pd-anchor b { color:var(--accent); font-weight:600; }
   @media (max-width:520px){ .pd-full-in { grid-template-columns:1fr; } .pd-card.open .pd-full{ max-height:440px; } }
+
+  /* ---- settings gear + modal ---- */
+  .gear { margin-left:auto; flex:none; width:36px; height:36px; border-radius:10px;
+          border:1px solid var(--line); background:var(--card-2); color:var(--muted);
+          display:flex; align-items:center; justify-content:center; cursor:pointer; transition:color .15s, border-color .15s; }
+  .gear:hover { color:var(--ink); border-color:var(--line-2); }
+  .modal-bg { position:fixed; inset:0; z-index:100; background:rgba(5,6,8,.66);
+              backdrop-filter:blur(4px); -webkit-backdrop-filter:blur(4px);
+              display:none; align-items:flex-end; justify-content:center; padding:16px; }
+  .modal-bg.show { display:flex; }
+  @media (min-width:560px){ .modal-bg.show { align-items:center; } }
+  .modal { width:100%; max-width:420px; background:var(--card); border:1px solid var(--line-2);
+           border-radius:18px; padding:20px; box-shadow:0 20px 60px rgba(0,0,0,.6);
+           position:relative; overflow:hidden; }
+  .modal::before { content:""; position:absolute; left:0; right:0; top:0; height:120px; pointer-events:none;
+    background:radial-gradient(300px 120px at 80% -40%, rgba(234,58,69,.22), transparent 70%); }
+  .modal-head { display:flex; align-items:flex-start; justify-content:space-between; gap:12px; position:relative; }
+  .modal-eyebrow { font-size:11px; letter-spacing:.16em; text-transform:uppercase; color:var(--accent); font-weight:600; }
+  .modal-title { font-family:var(--font-display); font-weight:700; font-size:21px; letter-spacing:-.02em; color:var(--head); margin-top:3px; }
+  .modal-x { flex:none; width:32px; height:32px; border-radius:9px; border:1px solid var(--line);
+             background:var(--card-2); color:var(--muted); cursor:pointer; font-size:14px; }
+  .modal-x:hover { color:var(--ink); }
+  .modal-note { font-size:13px; color:var(--muted); line-height:1.5; margin:12px 0 16px; position:relative; }
+  .preset-list { display:flex; flex-direction:column; gap:8px; }
+  .preset { width:100%; display:flex; align-items:center; gap:13px; text-align:left; cursor:pointer;
+            background:var(--card-2); border:1px solid var(--line); border-radius:12px; padding:13px 14px; color:inherit;
+            transition:border-color .15s, background .15s; }
+  .preset:hover { border-color:var(--line-2); }
+  .preset.active { border-color:var(--accent); background:color-mix(in srgb, var(--accent) 10%, var(--card-2)); }
+  .preset .radio { width:18px; height:18px; border-radius:50%; border:2px solid var(--faint); flex:none; position:relative; transition:border-color .15s; }
+  .preset.active .radio { border-color:var(--accent); }
+  .preset.active .radio::after { content:""; position:absolute; inset:3px; border-radius:50%; background:var(--accent); }
+  .preset .pl { flex:1; }
+  .preset .pl b { display:block; font-weight:600; font-size:14.5px; color:var(--head); }
+  .preset .pl span { font-family:var(--font-data); font-size:12px; color:var(--muted); }
+  .custom-row { margin-top:8px; display:flex; align-items:center; justify-content:space-between; gap:12px;
+                padding:13px 14px; border:1px solid var(--line); border-radius:12px; background:var(--card-2); }
+  .custom-row.active { border-color:var(--accent); }
+  .custom-row label { font-weight:600; font-size:14.5px; color:var(--head); }
+  .custom-in { display:flex; align-items:center; gap:6px; }
+  .custom-in input { width:74px; text-align:center; font-family:var(--font-data); font-size:15px; font-weight:600;
+                     color:var(--head); background:var(--paper); border:1px solid var(--line-2); border-radius:9px; padding:8px 6px; }
+  .custom-in input:focus { outline:2px solid var(--accent); outline-offset:1px; }
+  .custom-in span { font-family:var(--font-data); font-size:12px; color:var(--muted); }
+  .modal-foot { margin-top:16px; text-align:center; font-family:var(--font-data); font-size:11px;
+                letter-spacing:.04em; color:var(--faint); }
 
   @media (prefers-reduced-motion: reduce) { * { scroll-behavior:auto !important; transition:none !important; } .day.today::after{animation:none;} }
   @media (prefers-reduced-motion: no-preference) {
@@ -266,8 +325,17 @@
 <div class="wrap">
 
   <header class="mast">
-    <div class="wordmark">SUB<span class="n">-40</span></div>
-    <div class="mast-sub">Chris <b>×</b> Megan &nbsp;·&nbsp; 10K &nbsp;·&nbsp; Sun <b>11 Oct 2026</b></div>
+    <div class="mast-top">
+      <span class="mast-pill">10K Plan</span>
+      <button class="gear" id="gearBtn" aria-label="Calibrate paces" aria-haspopup="dialog">
+        <svg viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true">
+          <circle cx="12" cy="12" r="3"/>
+          <path d="M19.4 15a1.65 1.65 0 0 0 .33 1.82l.06.06a2 2 0 1 1-2.83 2.83l-.06-.06a1.65 1.65 0 0 0-1.82-.33 1.65 1.65 0 0 0-1 1.51V21a2 2 0 0 1-4 0v-.09A1.65 1.65 0 0 0 9 19.4a1.65 1.65 0 0 0-1.82.33l-.06.06a2 2 0 1 1-2.83-2.83l.06-.06a1.65 1.65 0 0 0 .33-1.82 1.65 1.65 0 0 0-1.51-1H3a2 2 0 0 1 0-4h.09A1.65 1.65 0 0 0 4.6 9a1.65 1.65 0 0 0-.33-1.82l-.06-.06a2 2 0 1 1 2.83-2.83l.06.06a1.65 1.65 0 0 0 1.82.33H9a1.65 1.65 0 0 0 1-1.51V3a2 2 0 0 1 4 0v.09a1.65 1.65 0 0 0 1 1.51 1.65 1.65 0 0 0 1.82-.33l.06-.06a2 2 0 1 1 2.83 2.83l-.06.06a1.65 1.65 0 0 0-.33 1.82V9a1.65 1.65 0 0 0 1.51 1H21a2 2 0 0 1 0 4h-.09a1.65 1.65 0 0 0-1.51 1z"/>
+        </svg>
+      </button>
+    </div>
+    <div class="wordmark">Sub<span class="n">40</span></div>
+    <div class="mast-sub">Chris <b>&amp;</b> Megan &nbsp;·&nbsp; 10K &nbsp;·&nbsp; Sun <b>11 Oct 2026</b></div>
     <div class="rail">
       <div class="rail-meta"><span id="railLeft" class="big">—</span><span id="railRight">—</span></div>
       <div class="rail-track"><div id="railFill" class="rail-fill" style="width:0"></div></div>
@@ -285,7 +353,7 @@
   </details>
 
   <footer>
-    Paces are blended estimates off a 21:30 5k.<br>Replace them after your week-1 time trials.
+    Pace zones are built from your selected 5k benchmark.<br>Tap the gear, top right, to change it — saved on this device.
   </footer>
 </div>
 
@@ -297,6 +365,25 @@
       <div class="pd-chips" id="pdChips"></div>
       <button class="pd-toggle" id="pdToggle" aria-expanded="false" aria-controls="pdFull" aria-label="Show pace zone names"><span class="pd-chev"></span></button>
     </div>
+  </div>
+</div>
+
+<div class="modal-bg" id="setBg">
+  <div class="modal" role="dialog" aria-modal="true" aria-labelledby="setTitle">
+    <div class="modal-head">
+      <div>
+        <div class="modal-eyebrow">Calibrate</div>
+        <h2 id="setTitle" class="modal-title">Your 5k benchmark</h2>
+      </div>
+      <button class="modal-x" id="setClose" aria-label="Close">✕</button>
+    </div>
+    <p class="modal-note">Sets the pace your training zones are built from. Goal pace stays 4:00/km — it’s the race target, not your current fitness.</p>
+    <div class="preset-list" id="presetList"></div>
+    <div class="custom-row" id="customRow">
+      <label for="customInput">Custom 5k pace</label>
+      <div class="custom-in"><input id="customInput" inputmode="numeric" placeholder="m:ss" maxlength="4" /><span>/km</span></div>
+    </div>
+    <div class="modal-foot" id="modalFoot">Saved on this device</div>
   </div>
 </div>
 
@@ -324,25 +411,25 @@ const R = {type:'rest'};
 function E(t,d){return {type:'easy',title:t,detail:d};}
 
 const WEEKS = [
-  {dates:'Jun 22 – 28', days:[E('Easy + strides','6 km easy · 6 strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 8 min @ T (4:30–4:40), 3 min jog'},R,{type:'hills',title:'Hill strides',detail:'8 × 30 s hills hard / jog-down · 6 strides'},R,{type:'long',title:'Long run',detail:'12 km easy'}]},
+  {dates:'Jun 22 – 28', days:[E('Easy + strides','6 km easy · 6 strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 8 min @ T, 3 min jog'},R,{type:'hills',title:'Hill strides',detail:'8 × 30 s hills hard / jog-down · 6 strides'},R,{type:'long',title:'Long run',detail:'12 km easy'}]},
   {dates:'Jun 29 – Jul 5', days:[E('Easy + strides','7 km easy · strides'),R,{type:'threshold',title:'Threshold',detail:'3 × 8 min @ T, 2:30 jog'},R,{type:'hills',title:'Hill strides',detail:'10 × 30 s hills · strides'},R,{type:'long',title:'Long run',detail:'14 km easy'}]},
-  {dates:'Jul 6 – 12', days:[E('Easy + strides','7 km easy · strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 12 min @ T, 3 min jog'},R,{type:'speed',title:'Speed reps',detail:'6 × 400 m @ Sp (3:35–3:50), 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
+  {dates:'Jul 6 – 12', days:[E('Easy + strides','7 km easy · strides'),R,{type:'threshold',title:'Threshold',detail:'2 × 12 min @ T, 3 min jog'},R,{type:'speed',title:'Speed reps',detail:'6 × 400 m @ Sp, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
   {dates:'Jul 13 – 19', note:'Deload', days:[E('Easy','6 km easy'),R,{type:'threshold',title:'Threshold',detail:'2 × 10 min @ T'},R,E('Easy + strides','Easy run · 6 strides only'),R,{type:'long',title:'Long run',detail:'12 km easy'}]},
 
-  {dates:'Jul 20 – 26', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'5 × 1 km @ T, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V (3:55–4:05), 2 min jog'},R,{type:'long',title:'Long run',detail:'15 km easy'}]},
-  {dates:'Jul 27 – Aug 2', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'4 × 1.5 km @ T, 90 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'16 km · last 3 km @ steady'}]},
+  {dates:'Jul 20 – 26', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'5 × 1 km @ T, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'15 km easy'}]},
+  {dates:'Jul 27 – Aug 2', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'4 × 1.5 km @ T, 90 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'16 km · last 3 km @ St'}]},
   {dates:'Aug 3 – 9', days:[E('Easy + strides','9 km easy · strides'),R,{type:'threshold',title:'Cruise intervals',detail:'6 × 1 km @ T, 60 s jog (or 25 min continuous)'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 800 m @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'17 km easy'}]},
   {dates:'Aug 10 – 16', note:'Deload', days:[E('Easy','7 km easy'),R,{type:'threshold',title:'Tempo',detail:'20 min continuous @ T'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'13 km easy'}]},
 
-  {dates:'Aug 17 – 23', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Tempo + goal pace',detail:'2 × 2 km @ T (3 min) + 2 × 1 km @ GP (4:00), 2 min'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 1 km @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km · 2 × 2 km @ steady'}]},
-  {dates:'Aug 24 – 30', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Descending km',detail:'5 × 1 km, 4:12 → 4:00, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ 3:55, 90 s jog'},R,{type:'long',title:'Long run + GP',detail:'16 km · 3 × 2 km @ GP, 2 min float'}]},
-  {dates:'Aug 31 – Sep 6', note:'Peak', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Sub-40 confidence',detail:'6 × 1 km @ GP (4:00), 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'4 × 1200 m @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'18 km · last 4 km @ steady'}]},
+  {dates:'Aug 17 – 23', days:[E('Easy + strides','8 km easy · strides'),R,{type:'threshold',title:'Tempo + goal pace',detail:'2 × 2 km @ T (3 min) + 2 × 1 km @ GP, 2 min'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 1 km @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km · 2 × 2 km @ St'}]},
+  {dates:'Aug 24 – 30', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Descending km',detail:'5 × 1 km, from 5k pace → GP, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ V, 90 s jog'},R,{type:'long',title:'Long run + GP',detail:'16 km · 3 × 2 km @ GP, 2 min float'}]},
+  {dates:'Aug 31 – Sep 6', note:'Peak', days:[E('Easy + strides','9 km easy · strides'),R,{type:'gp',title:'Sub-40 confidence',detail:'6 × 1 km @ GP, 75 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'4 × 1200 m @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'18 km · last 4 km @ St'}]},
   {dates:'Sep 7 – 13', note:'Deload', days:[E('Easy','7 km easy'),R,{type:'gp',title:'Goal pace',detail:'4 × 1 km @ GP, 90 s jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'5 × 3 min @ V, 2 min jog'},R,{type:'long',title:'Long run',detail:'13 km easy'}]},
 
-  {dates:'Sep 14 – 20', days:[E('Easy + strides','8 km easy · strides'),R,{type:'gp',title:'Race-specific',detail:'3 × 2 km @ GP (4:00), 2:30 jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ 3:55, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
-  {dates:'Sep 21 – 27', days:[E('Easy + strides','7 km easy · strides'),R,{type:'gp',title:'Goal pace',detail:'5 × 1 km @ GP, 60 s jog'},R,{type:'speed',title:'Sharpening',detail:'8 × 400 m @ Sp (3:35–3:50), 90 s jog'},R,{type:'long',title:'Long run',detail:'14 km easy'}]},
+  {dates:'Sep 14 – 20', days:[E('Easy + strides','8 km easy · strides'),R,{type:'gp',title:'Race-specific',detail:'3 × 2 km @ GP, 2:30 jog'},R,{type:'vo2',title:'VO₂ intervals',detail:'6 × 800 m @ V, 90 s jog'},R,{type:'long',title:'Long run',detail:'16 km easy'}]},
+  {dates:'Sep 21 – 27', days:[E('Easy + strides','7 km easy · strides'),R,{type:'gp',title:'Goal pace',detail:'5 × 1 km @ GP, 60 s jog'},R,{type:'speed',title:'Sharpening',detail:'8 × 400 m @ Sp, 90 s jog'},R,{type:'long',title:'Long run',detail:'14 km easy'}]},
   {dates:'Sep 28 – Oct 4', note:'Sharpen', days:[E('Easy + strides','6 km easy · strides'),R,{type:'gp',title:'Goal pace',detail:'4 × 1 km @ GP, 75 s jog'},R,{type:'vo2',title:'Tune-up',detail:'3 km time trial, or 5 × 3 min @ V'},R,{type:'long',title:'Long run',detail:'12 km easy'}]},
-  {dates:'Oct 5 – 11', note:'Race week', days:[{type:'recovery',title:'Optional shakeout',detail:'Rest, or 5 km very easy'},R,E('Easy + strides','6 km easy · 4 strides'),R,{type:'primer',title:'Race primer',detail:'4 km easy · 4 × 30 s @ goal pace'},{type:'shakeout',title:'Shakeout',detail:'Optional 3 km + 3 × 100 m strides, or rest'},{type:'race',title:'RACE — 10 km',detail:'Goal 4:00/km. Open 4:02–4:03, settle, push from 7 km.'}]},
+  {dates:'Oct 5 – 11', note:'Race week', days:[{type:'recovery',title:'Optional shakeout',detail:'Rest, or 5 km very easy'},R,E('Easy + strides','6 km easy · 4 strides'),R,{type:'primer',title:'Race primer',detail:'4 km easy · 4 × 30 s @ GP'},{type:'shakeout',title:'Shakeout',detail:'Optional 3 km + 3 × 100 m strides, or rest'},{type:'race',title:'RACE — 10 km',detail:'Goal 4:00/km. Open 4:02–4:03, settle, push from 7 km.'}]},
 ];
 
 const PHASES = [
@@ -352,10 +439,24 @@ const PHASES = [
   {n:'Sharpen & race',     span:'Sep 14 – Oct 11', i:'Race-specific work, then taper to a peak.', w:[12,13,14,15]},
 ];
 
-const ZONES = [
-  ['E','Easy / recovery','5:25–5:55','easy'],['St','Steady','4:50–5:05','long'],['T','Threshold','4:30–4:40','thr'],
-  ['GP','Goal pace','4:00','gp'],['V','VO₂ / intervals','3:55–4:05','vo2'],['Sp','Speed / strides','3:35–3:50','spd'],
+/* ---- pace model: everything derives from a 5k pace (sec/km) ---- */
+const GP_S = 240;                         // goal pace 4:00/km — fixed, the race target
+const ZONEMETA = [                        // code, name, hue, [low offset, high offset] from 5k pace
+  ['E','Easy / recovery','easy',[67,97]],
+  ['St','Steady','steady',[32,47]],
+  ['T','Threshold','thr',[12,22]],
+  ['GP','Goal pace','gp',null],           // fixed at GP_S
+  ['V','VO₂ / intervals','vo2',[-23,-13]],
+  ['Sp','Speed / strides','spd',[-43,-28]],
 ];
+const PRESETS = {
+  blended:{label:'Blended (both)', p5:258, sub:'21:30 · 4:18/km'},
+  chris:  {label:'Chris',          p5:252, sub:'21:00 · 4:12/km'},
+  megan:  {label:'Megan',          p5:270, sub:'22:30 · 4:30/km'},
+};
+const fmtPace = s => { s=Math.round(s); return Math.floor(s/60)+':'+String(s%60).padStart(2,'0'); };
+const paceRange = (p5, off) => off ? `${fmtPace(p5+off[0])}–${fmtPace(p5+off[1])}` : fmtPace(GP_S);
+
 const RULES = [
   ['Consistency beats heroics.','A session at 80% beats a missed one. Don’t cram to catch up.'],
   ['Protect Wednesday & Sunday.','If a week slips, keep the threshold and long run; drop the easy run first.'],
@@ -496,17 +597,76 @@ function jumpTo(i){
   el.scrollIntoView({behavior:'smooth', block:'center'});
 }
 
+/* ---------------- paces: state, persistence, render ---------------- */
+const LS_KEY = 'sub40_anchor_v1';
+let anchor = { mode:'blended', p5:PRESETS.blended.p5 };
+try { const s = JSON.parse(localStorage.getItem(LS_KEY)); if (s && s.p5) anchor = s; } catch(e){}
+
+function activeLabel(){
+  if (anchor.mode === 'custom') return `Custom · ${fmtPace(anchor.p5)}/km`;
+  const p = PRESETS[anchor.mode]; return `${p.label} · ${fmtPace(anchor.p5)}/km`;
+}
+function renderPaces(){
+  const p5 = anchor.p5;
+  document.getElementById('pdChips').innerHTML = ZONEMETA.map(z=>
+    `<span class="pd-chip"><span class="d" style="background:var(--${z[2]})"></span><span class="c">${z[0]}</span><span class="p">${paceRange(p5,z[3])}</span></span>`).join('');
+  document.getElementById('pdZones').innerHTML =
+    `<div class="pd-anchor">Built from <b>${activeLabel()}</b></div>` +
+    ZONEMETA.map(z=>`<div class="pd-z"><span class="zd" style="background:var(--${z[2]})"></span><span class="zc">${z[0]}</span><span class="zn">${z[1]}</span><span class="zp">${paceRange(p5,z[3])} /km</span></div>`).join('');
+}
+function saveAnchor(){ try { localStorage.setItem(LS_KEY, JSON.stringify(anchor)); } catch(e){} }
+
 /* ---------------- paint ---------------- */
 document.getElementById('hero').innerHTML = heroHTML();
 document.getElementById('plan').innerHTML = planHTML();
-document.getElementById('pdChips').innerHTML = ZONES.map(z=>`<span class="pd-chip"><span class="d" style="background:var(--${z[3]})"></span><span class="c">${z[0]}</span><span class="p">${z[2]}</span></span>`).join('');
-document.getElementById('pdZones').innerHTML = ZONES.map(z=>`<div class="pd-z"><span class="zd" style="background:var(--${z[3]})"></span><span class="zc">${z[0]}</span><span class="zn">${z[1]}</span><span class="zp">${z[2]} /km</span></div>`).join('');
+renderPaces();
 (function(){
   const card=document.getElementById('pdCard'), btn=document.getElementById('pdToggle');
   btn.addEventListener('click',()=>{ const o=card.classList.toggle('open'); btn.setAttribute('aria-expanded',o); });
   document.addEventListener('keydown',e=>{ if(e.key==='Escape'){ card.classList.remove('open'); btn.setAttribute('aria-expanded','false'); } });
 })();
 document.getElementById('rules').innerHTML = RULES.map(r=>`<div class="rule"><b>${r[0]}</b> ${r[1]}</div>`).join('');
+
+/* ---------------- settings modal ---------------- */
+(function(){
+  const bg=document.getElementById('setBg'), gear=document.getElementById('gearBtn'),
+        close=document.getElementById('setClose'), list=document.getElementById('presetList'),
+        customRow=document.getElementById('customRow'), input=document.getElementById('customInput');
+
+  function paintPresets(){
+    list.innerHTML = Object.entries(PRESETS).map(([k,p])=>
+      `<button class="preset${anchor.mode===k?' active':''}" data-k="${k}">
+        <span class="radio"></span>
+        <span class="pl"><b>${p.label}</b><span>${p.sub}</span></span>
+      </button>`).join('');
+    list.querySelectorAll('.preset').forEach(b=>b.addEventListener('click',()=>{
+      const k=b.dataset.k; anchor={mode:k,p5:PRESETS[k].p5}; apply();
+    }));
+    customRow.classList.toggle('active', anchor.mode==='custom');
+    if (anchor.mode==='custom') input.value = fmtPace(anchor.p5);
+  }
+  function apply(){ saveAnchor(); renderPaces(); paintPresets(); }
+
+  function parsePace(v){
+    const m = String(v).trim().match(/^(\d{1,2}):([0-5]\d)$/);
+    if(!m) return null;
+    const sec = (+m[1])*60 + (+m[2]);
+    return (sec>=180 && sec<=480) ? sec : null;   // 3:00–8:00 /km sanity range
+  }
+  input.addEventListener('input',()=>{
+    const sec = parsePace(input.value);
+    if(sec){ anchor={mode:'custom',p5:sec}; saveAnchor(); renderPaces();
+      customRow.classList.add('active');
+      list.querySelectorAll('.preset').forEach(b=>b.classList.remove('active')); }
+  });
+
+  function open(){ paintPresets(); bg.classList.add('show'); }
+  function shut(){ bg.classList.remove('show'); }
+  gear.addEventListener('click', open);
+  close.addEventListener('click', shut);
+  bg.addEventListener('click', e=>{ if(e.target===bg) shut(); });
+  document.addEventListener('keydown', e=>{ if(e.key==='Escape' && bg.classList.contains('show')) shut(); });
+})();
 
 // progress rail
 (function(){
